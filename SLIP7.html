@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Text on Hover</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0f1724;
+      --text-main: #f8fafc;
+      --accent: #ff6b6b;
+      --accent-2: #7c5cff;
+    }
+
+    /* Page layout */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg,var(--bg) 0%, #0b1220 100%);
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      color: var(--text-main);
+    }
+
+    /* Scene provides perspective for 3D transforms */
+    .scene {
+      perspective: 900px;             /* how strong 3D perspective is */
+      -webkit-perspective: 900px;
+    }
+
+    /* The text itself */
+    .title {
+      font-size: clamp(36px, 6vw, 96px);
+      line-height: 1;
+      letter-spacing: -1px;
+      display: inline-block;
+      padding: 18px 28px;
+      border-radius: 12px;
+      cursor: default;
+
+      /* base (flat) style when not hovered */
+      color: var(--text-main);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      transition: transform 400ms cubic-bezier(.2,.9,.2,1), 
+                  text-shadow 400ms cubic-bezier(.2,.9,.2,1),
+                  filter 400ms cubic-bezier(.2,.9,.2,1);
+      transform-style: preserve-3d;
+      -webkit-font-smoothing: antialiased;
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      user-select: none;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    /* subtle flat shadow when idle */
+    .title {
+      text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+      transform: translateZ(0) rotateX(0deg);
+      filter: saturate(1);
+    }
+
+    /* 3D effect that appears ONLY on hover */
+    .scene:hover .title,
+    .title:hover {
+      /* push the text forward a bit and tilt it for 3D perspective */
+      transform: translateZ(40px) rotateX(12deg) translateY(-6px);
+
+      /* colorful multi-layered shadows to mimic extrusion */
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.6),
+        0 2px 0 rgba(0,0,0,0.55),
+        0 4px 0 rgba(0,0,0,0.5),
+        0 8px 0 rgba(0,0,0,0.45),
+        0 16px 30px rgba(2,6,23,0.6),
+        /* slight colored rim to give 'lit edge' */
+        -6px -3px 12px rgba(124,92,255,0.12),
+        6px -3px 12px rgba(255,107,107,0.08);
+
+      /* boost color vibrancy */
+      filter: saturate(1.15) drop-shadow(0 10px 20px rgba(2,6,23,0.6));
+    }
+
+    /* small responsive note under the title */
+    .subtitle {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* Accessibility: focus shows same effect as hover for keyboard users */
+    .title:focus {
+      outline: none;
+      transform: translateZ(40px) rotateX(12deg) translateY(-6px);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.6),
+        0 2px 0 rgba(0,0,0,0.55),
+        0 4px 0 rgba(0,0,0,0.5),
+        0 8px 0 rgba(0,0,0,0.45),
+        0 16px 30px rgba(2,6,23,0.6),
+        -6px -3px 12px rgba(124,92,255,0.12),
+        6px -3px 12px rgba(255,107,107,0.08);
+    }
+
+    /* Make the title focusable for keyboard users */
+    .title[tabindex] { outline: none; }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <!-- Make it focusable for keyboard accessibility (Enter/Space) -->
+    <h1 class="title" tabindex="0">Hover Me — 3D Text</h1>
+    <div class="subtitle">Move the mouse over the text (or focus it) to reveal the 3D effect.</div>
+  </div>
+
+</body>
+</html>

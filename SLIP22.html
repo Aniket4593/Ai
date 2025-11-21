@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Text & Text Effects Demo</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#0f1724;
+      --accent1:#ff7a7a;
+      --accent2:#7a7aff;
+      --glass: rgba(255,255,255,0.03);
+      --max-width:1100px;
+      --mono: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Page layout */
+    html,body{height:100%; margin:0; font-family:var(--mono); background: linear-gradient(180deg,var(--bg) 0%, #071022 100%); color: #e6eef8;}
+    .wrap{max-width:var(--max-width); margin:28px auto; padding:20px; box-sizing:border-box;}
+
+    header{display:flex; gap:16px; align-items:center; margin-bottom:22px}
+    .logo {
+      width:64px; height:64px; border-radius:10px;
+      background: linear-gradient(135deg,var(--accent2),var(--accent1));
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6), inset 0 -6px 15px rgba(255,255,255,0.05);
+      display:grid; place-items:center; font-weight:800; color:#fff;
+      font-size:18px;
+    }
+    header h1{margin:0; font-size:20px; letter-spacing:0.6px; color:#cfe6ff}
+
+    main {display:grid; gap:20px; grid-template-columns: 1fr; align-items:start;}
+
+    /* ------- 3D Title (center stage) ------- */
+    .scene {display:flex; justify-content:center; align-items:center; padding:28px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; box-shadow: 0 8px 30px rgba(2,6,23,0.6);}
+    .title {
+      font-size: clamp(36px, 8vw, 96px);
+      line-height: 0.9;
+      margin:0;
+      font-weight:900;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      display:inline-block;
+      padding: 8px 18px;
+      /* Gradient fill for text */
+      background: linear-gradient(90deg,var(--accent1) 0%, #ffd07a 40%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      /* preserve for non-supporting browsers */
+      color: var(--accent1);
+      /* create deep extrusion via multiple shadows */
+      text-shadow:
+        /* dark base shadows for depth (extrusion) */
+        0 1px 0 rgba(0,0,0,0.85),
+        0 2px 0 rgba(0,0,0,0.8),
+        0 4px 0 rgba(0,0,0,0.75),
+        0 6px 0 rgba(0,0,0,0.7),
+        0 9px 18px rgba(2,6,23,0.65),
+        /* colored rim highlights (subtle) */
+        -6px -2px 18px rgba(122,122,255,0.07),
+         6px -2px 18px rgba(255,122,122,0.06);
+      transition: transform 420ms cubic-bezier(.2,.9,.2,1), text-shadow 420ms ease;
+      transform-origin: 50% 60%;
+      transform: translateZ(0) translateY(0);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* hover/focus reveal: tilt and pop forward */
+    .title:hover, .title:focus {
+      transform: perspective(800px) translateZ(30px) rotateX(8deg) translateY(-8px);
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.85),
+        0 2px 0 rgba(0,0,0,0.8),
+        0 4px 0 rgba(0,0,0,0.75),
+        0 6px 0 rgba(0,0,0,0.7),
+        0 26px 40px rgba(2,6,23,0.85),
+        -10px -6px 30px rgba(122,92,255,0.12),
+         10px -6px 30px rgba(255,107,107,0.10);
+      cursor:default;
+    }
+
+    /* small subtitle */
+    .subtitle {text-align:center; color:rgba(255,255,255,0.7); margin-top:6px; font-size:14px}
+
+    /* ------- Examples grid ------- */
+    .examples {display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-top:8px;}
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px; padding:14px;
+      box-shadow: 0 8px 18px rgba(2,6,23,0.5);
+      min-height:120px;
+    }
+    .card h3 {margin:0 0 8px 0; font-size:16px; color:#dff0ff}
+
+    /* 1) Text shadow / glow demo */
+    .glow-text {
+      font-size:28px; font-weight:800; display:inline-block;
+      color:#fff;
+      text-shadow:
+        0 1px 0 rgba(0,0,0,0.9),
+        0 3px 6px rgba(2,6,23,0.8),
+        0 0 12px rgba(122,92,255,0.22),
+        0 0 20px rgba(255,122,122,0.12);
+    }
+
+    /* 2) Text overflow - single line ellipsis */
+    .ellipsis-box {
+      width:100%;
+      max-width:420px;
+      background:var(--glass);
+      padding:10px;
+      border-radius:8px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .ellipsis-box p {
+      margin:0;
+      white-space:nowrap;          /* keep single line */
+      overflow:hidden;
+      text-overflow:ellipsis;      /* show "..." */
+      font-size:15px;
+    }
+
+    /* 3) Word wrap (overflow-wrap) demo */
+    .wrap-box {
+      background:var(--glass); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);
+      font-size:15px;
+    }
+    /* demonstrate breaking of long words */
+    .wrap-box p {
+      margin:0;
+      width:100%;
+      overflow-wrap: break-word;   /* modern */
+      word-wrap: break-word;       /* legacy */
+      hyphens: auto;               /* adds hyphenation when supported */
+      line-height:1.45;
+    }
+
+    /* 4) Preserve whitespace & pre-wrap demo */
+    .pre-box {
+      background:var(--glass); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      color:#e8f7ff;
+      white-space: pre-wrap;       /* preserve newlines but wrap */
+      word-break: break-word;
+      font-size:13px;
+    }
+
+    /* 5) small helper to show CSS properties visually */
+    .badge {display:inline-block; background:rgba(255,255,255,0.04); color:#cfe6ff; padding:6px 8px; border-radius:6px; margin-right:6px; font-size:12px}
+
+    /* responsive tweaks */
+    @media (max-width:520px){
+      .title { font-size: clamp(28px, 10vw, 64px); }
+      header h1{display:none}
+      .logo{width:56px;height:56px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">3D</div>
+      <h1>Text Effects — CSS3 Demonstration</h1>
+    </header>
+
+    <main>
+      <!-- big 3D title -->
+      <section class="scene card" aria-label="3D Text example">
+        <div style="text-align:center">
+          <h2 class="title" tabindex="0" aria-label="3D Text Example">Creative 3D Text</h2>
+          <div class="subtitle">Hover or focus the text to enhance the 3D extrusion effect</div>
+        </div>
+      </section>
+
+      <!-- examples grid -->
+      <section class="examples">
+
+        <!-- Text shadow & glow -->
+        <article class="card" aria-labelledby="shadLab">
+          <h3 id="shadLab">Text Shadow & Glow</h3>
+          <div class="glow-text">Neon Glow • Deep Shadow</div>
+          <p style="margin-top:10px; color:rgba(255,255,255,0.75)">Uses layered <code class="badge">text-shadow</code> to simulate glow and depth.</p>
+        </article>
+
+        <!-- Text overflow (ellipsis) -->
+        <article class="card" aria-labelledby="ellLab">
+          <h3 id="ellLab">Text Overflow (Ellipsis)</h3>
+          <div class="ellipsis-box" title="This container uses text-overflow: ellipsis to show truncated text">
+            <p>Very long single-line text that will not fit inside this narrow box and therefore should be truncated with an ellipsis to indicate overflow behavior.</p>
+          </div>
+          <p style="margin-top:10px; color:rgba(255,255,255,0.75)"><span class="badge">white-space: nowrap</span><span class="badge">text-overflow: ellipsis</span></p>
+        </article>
+
+        <!-- Word wrap and hyphens -->
+        <article class="card" aria-labelledby="wrapLab">
+          <h3 id="wrapLab">Word Wrap & Hyphenation</h3>
+          <div class="wrap-box">
+            <p>
+              This paragraph contains a veryveryveryverylongwordwithoutanyhyphensorbreakswhich would normally overflow the container but <strong>overflow-wrap: break-word</strong> forces it to break into multiple lines instead.
+            </p>
+          </div>
+          <p style="margin-top:10px; color:rgba(255,255,255,0.75)"><span class="badge">overflow-wrap: break-word</span><span class="badge">hyphens: auto</span></p>
+        </article>
+
+        <!-- Preserve whitespace (pre-wrap) -->
+        <article class="card" aria-labelledby="preLab">
+          <h3 id="preLab">Preserve Whitespace (pre-wrap)</h3>
+          <div class="pre-box">
+            Line 1: preserve leading/trailing spaces  
+            Line 2: preserve newline breaks
+            Line 3: long text will wrap automatically when needed, but newlines remain.
+          </div>
+          <p style="margin-top:10px; color:rgba(255,255,255,0.75)"><span class="badge">white-space: pre-wrap</span><span class="badge">word-break: break-word</span></p>
+        </article>
+
+      </section>
+    </main>
+  </div>
+</body>
+</html>
